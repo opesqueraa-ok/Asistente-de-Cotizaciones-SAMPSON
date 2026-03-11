@@ -6,8 +6,27 @@
 
 body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--light-bg); margin: 0; padding: 20px; color: #333; }
 
-header { text-align: center; margin-bottom: 30px; border-bottom: 4px solid var(--sampson-red); padding-bottom: 10px; }
-.logo-placeholder { font-weight: 900; font-size: 24px; letter-spacing: 2px; color: var(--dark); }
+header { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; /* Centra el texto */
+    position: relative; /* Clave para el logo absoluto */
+    margin-bottom: 30px; 
+    border-bottom: 4px solid var(--sampson-red); 
+    padding-bottom: 10px; 
+}
+
+.logo-img { 
+    position: absolute; 
+    left: 0; /* Lo ancla a la esquina izquierda */
+    max-width: 150px; /* Ancho máximo del logo */
+    max-height: 70px; /* Alto máximo para que no desajuste el header */
+    object-fit: contain; 
+}
+
+.header-text { text-align: center; }
+.header-text h2 { margin: 0; color: var(--dark); }
+.header-text p { margin: 5px 0 0 0; color: #555; }
 
 .container { max-width: 1100px; margin: auto; }
 
