@@ -2,46 +2,61 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMPSON - Comparador de Cotizaciones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SAMPSON - Comparativo v1.2.1</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h2>📋 Generador de Cuadro Comparativo</h2>
-        <p>SAMPSON - Arquitectura & Construcción</p>
+        <h1>SAMPSON <span>Arquitectura - Diseño & Construcción</span></h1>
+        <p>Generador de Cuadros Comparativos de Compra</p>
     </header>
 
     <div class="container">
         <section id="form-section">
-            <div class="input-group">
-                <label>Producto / Servicio:</label>
-                <input type="text" id="prod-nombre" placeholder="Ej: Cemento Tolteca">
+            <div class="product-header">
+                <label>Producto o Servicio a Cotizar:</label>
+                <input type="text" id="prod-nombre" placeholder="Ej: 50 Sacos de Cemento UGC">
             </div>
 
             <div class="quotes-grid">
                 <div class="quote-card">
-                    <h3>Opción 1</h3>
-                    <input type="text" id="p1-nom" placeholder="Proveedor">
-                    <input type="number" id="p1-precio" placeholder="Precio (Q)">
+                    <div class="card-tag">Opción 1</div>
+                    <input type="text" id="p1-nom" placeholder="Nombre Proveedor">
+                    <input type="number" id="p1-precio" placeholder="Precio Total (Q)">
                     <select id="p1-envio">
                         <option value="No">¿Envío incluido? No</option>
                         <option value="Sí">¿Envío incluido? Sí</option>
                     </select>
-                    <textarea id="p1-obs" placeholder="Observaciones..."></textarea>
-                    <input type="text" id="p1-link" placeholder="Link de Foto (URL)">
+                    <textarea id="p1-obs" placeholder="Observaciones (Tiempo entrega, etc)"></textarea>
+                    <label class="file-label">📸 Subir Foto/Catálogo:</label>
+                    <input type="file" id="p1-file" accept="image/*">
                 </div>
 
                 <div class="quote-card">
-                    <h3>Opción 2</h3>
-                    <input type="text" id="p2-nom" placeholder="Proveedor">
-                    <input type="number" id="p2-precio" placeholder="Precio (Q)">
+                    <div class="card-tag">Opción 2</div>
+                    <input type="text" id="p2-nom" placeholder="Nombre Proveedor">
+                    <input type="number" id="p2-precio" placeholder="Precio Total (Q)">
                     <select id="p2-envio">
                         <option value="No">¿Envío incluido? No</option>
                         <option value="Sí">¿Envío incluido? Sí</option>
                     </select>
                     <textarea id="p2-obs" placeholder="Observaciones..."></textarea>
-                    <input type="text" id="p2-link" placeholder="Link de Foto (URL)">
+                    <label class="file-label">📸 Subir Foto/Catálogo:</label>
+                    <input type="file" id="p2-file" accept="image/*">
+                </div>
+
+                <div class="quote-card">
+                    <div class="card-tag">Opción 3</div>
+                    <input type="text" id="p3-nom" placeholder="Nombre Proveedor">
+                    <input type="number" id="p3-precio" placeholder="Precio Total (Q)">
+                    <select id="p3-envio">
+                        <option value="No">¿Envío incluido? No</option>
+                        <option value="Sí">¿Envío incluido? Sí</option>
+                    </select>
+                    <textarea id="p3-obs" placeholder="Observaciones..."></textarea>
+                    <label class="file-label">📸 Subir Foto/Catálogo:</label>
+                    <input type="file" id="p3-file" accept="image/*">
                 </div>
             </div>
 
@@ -49,23 +64,35 @@
         </section>
 
         <section id="result-section" class="hidden">
-            <h3>Cuadro Comparativo de <span id="res-producto"></span></h3>
+            <div class="result-header">
+                <h3>CUADRO COMPARATIVO: <span id="res-producto"></span></h3>
+                <p>Fecha: <span id="res-fecha"></span></p>
+            </div>
+            
             <table id="tabla-comparativa">
                 <thead>
                     <tr>
-                        <th>Detalle</th>
-                        <th id="th-p1">Proveedor 1</th>
-                        <th id="th-p2">Proveedor 2</th>
+                        <th width="20%">Detalle</th>
+                        <th id="th-p1">Opción 1</th>
+                        <th id="th-p2">Opción 2</th>
+                        <th id="th-p3">Opción 3</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-body">
                     </tbody>
             </table>
-            <button onclick="window.print()" class="print-btn">🖨️ Imprimir para Firma</button>
-            <button onclick="reiniciar()" class="reset-btn">Nueva Cotización</button>
+
+            <div class="firmas-container">
+                <div class="firma-box"><p>Elaborado por:</p><br><b>Katerine</b></div>
+                <div class="firma-box"><p>Autorizado por:</p><br>____________________</div>
+            </div>
+
+            <div class="actions">
+                <button onclick="window.print()" class="print-btn">🖨️ Imprimir / Guardar PDF</button>
+                <button onclick="reiniciar()" class="reset-btn">Nueva Cotización</button>
+            </div>
         </section>
     </div>
-
-    <script src="script.js"></script>
 </body>
+<script src="script.js"></script>
 </html>
