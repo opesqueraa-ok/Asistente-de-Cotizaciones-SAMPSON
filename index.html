@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMPSON - Comparativo v1.2.1</title>
+    <title>Cotizaciones</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpeg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <img src="logo.jpg" alt="Logo Sampson" class="logo-img">
+        <img src="logo.jpeg" alt="Logo Sampson" class="logo-img">
         <div class="header-text">
             <h2>CUADRO COMPARATIVO DE OFERTAS</h2>
             <p>Departamento de Compras y Planificación</p>
@@ -16,10 +17,11 @@
     </header>
 
     <div class="container">
-        <section id="form-section">
+        
+        <section id="form-section" class="no-print">
             <div class="input-main">
-                <label>Descripción del Producto o Servicio:</label>
-                <input type="text" id="prod-nombre" placeholder="Ej: Material de empaque / Suministro eléctrico">
+                <label>Descripción del Producto o Servicio (Ej: Tubería PVC 2"):</label>
+                <input type="text" id="prod-nombre" placeholder="Nombre del producto a agregar...">
             </div>
 
             <div class="quotes-grid">
@@ -32,7 +34,7 @@
                         <option value="Sí">Envío incluido: Sí</option>
                     </select>
                     <textarea id="p1-obs" placeholder="Garantía, tiempo de entrega..."></textarea>
-                    <label class="file-label">📸 Foto/Captura:</label>
+                    <label class="file-label">📸 Foto/Captura (Local):</label>
                     <input type="file" id="p1-file" accept="image/*">
                 </div>
 
@@ -45,7 +47,7 @@
                         <option value="Sí">Envío incluido: Sí</option>
                     </select>
                     <textarea id="p2-obs" placeholder="Garantía, tiempo de entrega..."></textarea>
-                    <label class="file-label">📸 Foto/Captura:</label>
+                    <label class="file-label">📸 Foto/Captura (Local):</label>
                     <input type="file" id="p2-file" accept="image/*">
                 </div>
 
@@ -58,46 +60,37 @@
                         <option value="Sí">Envío incluido: Sí</option>
                     </select>
                     <textarea id="p3-obs" placeholder="Garantía, tiempo de entrega..."></textarea>
-                    <label class="file-label">📸 Foto/Captura:</label>
+                    <label class="file-label">📸 Foto/Captura (Local):</label>
                     <input type="file" id="p3-file" accept="image/*">
                 </div>
             </div>
 
-            <button onclick="generarComparativa()" class="main-btn">Generar Cuadro para Impresión</button>
+            <button onclick="agregarProducto()" class="main-btn" id="btn-agregar">
+                ➕ Agregar Producto al Proyecto
+            </button>
         </section>
 
-        <section id="result-section" class="hidden">
-            <div class="result-header">
-                <h3>PRODUCTO: <span id="res-producto"></span></h3>
-                <p>Fecha: <span id="fecha-hoy"></span></p>
+        <section id="project-section">
+            <div id="fecha-contenedor" class="hidden">
+                <p><b>Fecha de emisión:</b> <span id="fecha-hoy"></span></p>
             </div>
 
-            <table id="tabla-comparativa">
-                <thead>
-                    <tr>
-                        <th width="25%">Detalle</th>
-                        <th id="th-p1">Opción 1</th>
-                        <th id="id-p2">Opción 2</th>
-                        <th id="id-p3">Opción 3</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-body">
-                    </tbody>
-            </table>
+            <div id="tablas-container"></div>
 
-            <div class="signature-area">
+            <div class="signature-area hidden" id="firma-area">
                 <div class="sig-box">
                     <div class="line"></div>
                     <p>Firma de Autorización</p>
                     <p class="small">Dirección Técnica / Gerencia</p>
                 </div>
             </div>
-
-            <div class="no-print actions">
-                <button onclick="window.print()" class="print-btn">🖨️ Imprimir Cuadro</button>
-                <button onclick="location.reload()" class="reset-btn">Nueva Cotización</button>
-            </div>
         </section>
+
+        <div class="actions no-print hidden" id="print-actions">
+            <button onclick="window.print()" class="print-btn">🖨️ Imprimir Proyecto Completo</button>
+            <button onclick="location.reload()" class="reset-btn">🗑️ Empezar Nuevo Proyecto</button>
+        </div>
+
     </div>
 </body>
 <script src="script.js"></script>
