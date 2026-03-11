@@ -1,4 +1,7 @@
-// Función para procesar imágenes cargadas
+// Arreglo para guardar todos los productos del proyecto actual
+let proyectoActual = [];
+
+// Función para procesar imágenes cargadas localmente
 const procesarImagen = (idInput) => {
     return new Promise((resolve) => {
         const file = document.getElementById(idInput).files[0];
@@ -10,13 +13,15 @@ const procesarImagen = (idInput) => {
     });
 };
 
-async function generarComparativa() {
-    // 1. Obtener Nombre del Producto y Fecha
-    const producto = document.getElementById('prod-nombre').value || "Suministro General";
-    document.getElementById('res-producto').innerText = producto.toUpperCase();
-    document.getElementById('fecha-hoy').innerText = new Date().toLocaleDateString();
+async function agregarProducto() {
+    const btn = document.getElementById('btn-agregar');
+    btn.innerText = "⏳ Procesando...";
+    btn.disabled = true;
 
-    // 2. Procesar las 3 imágenes (esperar a que carguen)
+    // 1. Obtener Nombre del Producto
+    const productoNombre = document.getElementById('prod-nombre').value || "Suministro General";
+
+    // 2. Procesar las 3 imágenes
     const img1 = await procesarImagen('p1-file');
     const img2 = await procesarImagen('p2-file');
     const img3 = await procesarImagen('p3-file');
@@ -32,51 +37,95 @@ async function generarComparativa() {
 
     const datos = [obtenerDatos(1, img1), obtenerDatos(2, img2), obtenerDatos(3, img3)];
 
-    // 4. Encontrar el precio más bajo (mayor a 0)
-    const preciosValidos = datos.map(d => d.precio).filter(p => p > 0);
-    const minPrecio = preciosValidos.length > 0 ? Math.min(...preciosValidos) : -1;
+    // 4. Agregar al arreglo del proyecto
+    proyectoActual.push({
+        producto: productoNombre.toUpperCase(),
+        opciones: datos
+    });
 
-    // 5. Construir Tabla
-    const tableBody = document.getElementById('tabla-body');
-    
-    // Fila Nombres Proveedores
-    document.getElementById('th-p1').innerText = datos[0].nom;
-    document.getElementById('id-p2').innerText = datos[1].nom;
-    document.getElementById('id-p3').innerText = datos[2].nom;
+    // 5. Renderizar todas las tablas
+    renderizarProyecto();
 
-    const filasHtml = `
-        <tr>
-            <td><b>Imagen Referencia</b></td>
-            <td><img src="${datos[0].foto}" class="foto-cotiz"></td>
-            <td><img src="${datos[1].foto}" class="foto-cotiz"></td>
-            <td><img src="${datos[2].foto}" class="foto-cotiz"></td>
-        </tr>
-        <tr>
-            <td><b>Precio Unitario</b></td>
-            <td class="${datos[0].precio === minPrecio ? 'mejor-precio' : ''}">Q${datos[0].precio.toFixed(2)}</td>
-            <td class="${datos[1].precio === minPrecio ? 'mejor-precio' : ''}">Q${datos[1].precio.toFixed(2)}</td>
-            <td class="${datos[2].precio === minPrecio ? 'mejor-precio' : ''}">Q${datos[2].precio.toFixed(2)}</td>
-        </tr>
-        <tr>
-            <td><b>Envío Incluido</b></td>
-            <td>${datos[0].envio}</td>
-            <td>${datos[1].envio}</td>
-            <td>${datos[2].envio}</td>
-        </tr>
-        <tr>
-            <td><b>Observaciones</b></td>
-            <td>${datos[0].obs}</td>
-            <td>${datos[1].obs}</td>
-            <td>${datos[2].obs}</td>
-        </tr>
-    `;
+    // 6. Limpiar el formulario para el siguiente producto
+    limpiarFormulario();
 
-    tableBody.innerHTML = filasHtml;
+    // Restaurar botón
+    btn.innerText = "➕ Agregar Producto al Proyecto";
+    btn.disabled = false;
+}
 
-    // 6. Mostrar resultado y ocultar formulario
-    document.getElementById('form-section').classList.add('hidden');
-    document.getElementById('result-section').classList.remove('hidden');
-    
-    // Scroll hacia arriba para ver el resultado
-    window.scrollTo(0, 0);
+function renderizarProyecto() {
+    const contenedor = document.getElementById('tablas-container');
+    contenedor.innerHTML = ""; // Limpiar antes de volver a dibujar
+
+    // Poner la fecha de hoy
+    document.getElementById('fecha-hoy').innerText = new Date().toLocaleDateString();
+    document.getElementById('fecha-contenedor').classList.remove('hidden');
+
+    // Dibujar cada producto como una tabla independiente
+    proyectoActual.forEach((item) => {
+        // Encontrar el precio más bajo
+        const preciosValidos = item.opciones.map(d => d.precio).filter(p => p > 0);
+        const minPrecio = preciosValidos.length > 0 ? Math.min(...preciosValidos) : -1;
+
+        const htmlTabla = `
+            <div class="tabla-wrapper">
+                <h3 class="tabla-titulo">▶ PRODUCTO: ${item.producto}</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="25%">Detalle</th>
+                            <th>${item.opciones[0].nom}</th>
+                            <th>${item.opciones[1].nom}</th>
+                            <th>${item.opciones[2].nom}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>Imagen Referencia</b></td>
+                            <td><img src="${item.opciones[0].foto}" class="foto-cotiz"></td>
+                            <td><img src="${item.opciones[1].foto}" class="foto-cotiz"></td>
+                            <td><img src="${item.opciones[2].foto}" class="foto-cotiz"></td>
+                        </tr>
+                        <tr>
+                            <td><b>Precio Unitario</b></td>
+                            <td class="${preciosValidos.length > 0 && item.opciones[0].precio === minPrecio ? 'mejor-precio' : ''}">Q${item.opciones[0].precio.toFixed(2)}</td>
+                            <td class="${preciosValidos.length > 0 && item.opciones[1].precio === minPrecio ? 'mejor-precio' : ''}">Q${item.opciones[1].precio.toFixed(2)}</td>
+                            <td class="${preciosValidos.length > 0 && item.opciones[2].precio === minPrecio ? 'mejor-precio' : ''}">Q${item.opciones[2].precio.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Envío Incluido</b></td>
+                            <td>${item.opciones[0].envio}</td>
+                            <td>${item.opciones[1].envio}</td>
+                            <td>${item.opciones[2].envio}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Observaciones</b></td>
+                            <td>${item.opciones[0].obs}</td>
+                            <td>${item.opciones[1].obs}</td>
+                            <td>${item.opciones[2].obs}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+        contenedor.innerHTML += htmlTabla;
+    });
+
+    // Mostrar botones de imprimir y área de firma
+    document.getElementById('print-actions').classList.remove('hidden');
+    document.getElementById('firma-area').classList.remove('hidden');
+}
+
+function limpiarFormulario() {
+    document.getElementById('prod-nombre').value = "";
+    for(let i=1; i<=3; i++) {
+        document.getElementById(`p${i}-nom`).value = "";
+        document.getElementById(`p${i}-precio`).value = "";
+        document.getElementById(`p${i}-envio`).value = "No";
+        document.getElementById(`p${i}-obs`).value = "";
+        document.getElementById(`p${i}-file`).value = ""; // Limpia el archivo cargado
+    }
+    // Subir la vista al inicio del formulario para seguir agregando
+    document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
 }
