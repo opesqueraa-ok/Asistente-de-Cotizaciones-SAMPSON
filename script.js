@@ -18,8 +18,9 @@ async function agregarProducto() {
     btn.innerText = "⏳ Procesando...";
     btn.disabled = true;
 
-    // 1. Obtener Nombre del Producto
+    // 1. Obtener Nombre del Producto y CANTIDAD (Nuevo)
     const productoNombre = document.getElementById('prod-nombre').value || "Suministro General";
+    const productoCantidad = parseInt(document.getElementById('prod-cantidad').value) || 1; // Valor por defecto: 1
 
     // 2. Procesar las 3 imágenes
     const img1 = await procesarImagen('p1-file');
@@ -27,19 +28,24 @@ async function agregarProducto() {
     const img3 = await procesarImagen('p3-file');
 
     // 3. Capturar datos de proveedores
-    const obtenerDatos = (num, img) => ({
-        nom: document.getElementById(`p${num}-nom`).value || `Proveedor ${num}`,
-        precio: parseFloat(document.getElementById(`p${num}-precio`).value) || 0,
-        envio: document.getElementById(`p${num}-envio`).value,
-        obs: document.getElementById(`p${num}-obs`).value || "-",
-        foto: img
-    });
+    const obtenerDatos = (num, img) => {
+        const precioUnit = parseFloat(document.getElementById(`p${num}-precio`).value) || 0;
+        return {
+            nom: document.getElementById(`p${num}-nom`).value || `Proveedor ${num}`,
+            precioUnitario: precioUnit,
+            precioTotal: precioUnit * productoCantidad, // Calcula el total automáticamente
+            envio: document.getElementById(`p${num}-envio`).value,
+            obs: document.getElementById(`p${num}-obs`).value || "-",
+            foto: img
+        };
+    };
 
     const datos = [obtenerDatos(1, img1), obtenerDatos(2, img2), obtenerDatos(3, img3)];
 
     // 4. Agregar al arreglo del proyecto
     proyectoActual.push({
         producto: productoNombre.toUpperCase(),
+        cantidad: productoCantidad, // Se guarda la cantidad
         opciones: datos
     });
 
@@ -64,13 +70,13 @@ function renderizarProyecto() {
 
     // Dibujar cada producto como una tabla independiente
     proyectoActual.forEach((item) => {
-        // Encontrar el precio más bajo
-        const preciosValidos = item.opciones.map(d => d.precio).filter(p => p > 0);
-        const minPrecio = preciosValidos.length > 0 ? Math.min(...preciosValidos) : -1;
+        // Encontrar el precio TOTAL más bajo para resaltar al ganador
+        const preciosTotalesValidos = item.opciones.map(d => d.precioTotal).filter(p => p > 0);
+        const minPrecioTotal = preciosTotalesValidos.length > 0 ? Math.min(...preciosTotalesValidos) : -1;
 
         const htmlTabla = `
             <div class="tabla-wrapper">
-                <h3 class="tabla-titulo">▶ PRODUCTO: ${item.producto}</h3>
+                <h3 class="tabla-titulo">▶ PRODUCTO: ${item.producto} (Cantidad: ${item.cantidad})</h3>
                 <table>
                     <thead>
                         <tr>
@@ -89,9 +95,15 @@ function renderizarProyecto() {
                         </tr>
                         <tr>
                             <td><b>Precio Unitario</b></td>
-                            <td class="${preciosValidos.length > 0 && item.opciones[0].precio === minPrecio ? 'mejor-precio' : ''}">Q${item.opciones[0].precio.toFixed(2)}</td>
-                            <td class="${preciosValidos.length > 0 && item.opciones[1].precio === minPrecio ? 'mejor-precio' : ''}">Q${item.opciones[1].precio.toFixed(2)}</td>
-                            <td class="${preciosValidos.length > 0 && item.opciones[2].precio === minPrecio ? 'mejor-precio' : ''}">Q${item.opciones[2].precio.toFixed(2)}</td>
+                            <td>Q${item.opciones[0].precioUnitario.toFixed(2)}</td>
+                            <td>Q${item.opciones[1].precioUnitario.toFixed(2)}</td>
+                            <td>Q${item.opciones[2].precioUnitario.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Precio Total (x${item.cantidad})</b></td>
+                            <td class="${preciosTotalesValidos.length > 0 && item.opciones[0].precioTotal === minPrecioTotal ? 'mejor-precio' : ''}"><b>Q${item.opciones[0].precioTotal.toFixed(2)}</b></td>
+                            <td class="${preciosTotalesValidos.length > 0 && item.opciones[1].precioTotal === minPrecioTotal ? 'mejor-precio' : ''}"><b>Q${item.opciones[1].precioTotal.toFixed(2)}</b></td>
+                            <td class="${preciosTotalesValidos.length > 0 && item.opciones[2].precioTotal === minPrecioTotal ? 'mejor-precio' : ''}"><b>Q${item.opciones[2].precioTotal.toFixed(2)}</b></td>
                         </tr>
                         <tr>
                             <td><b>Envío Incluido</b></td>
@@ -119,6 +131,8 @@ function renderizarProyecto() {
 
 function limpiarFormulario() {
     document.getElementById('prod-nombre').value = "";
+    document.getElementById('prod-cantidad').value = "1"; // Resetea la cantidad a 1
+    
     for(let i=1; i<=3; i++) {
         document.getElementById(`p${i}-nom`).value = "";
         document.getElementById(`p${i}-precio`).value = "";
