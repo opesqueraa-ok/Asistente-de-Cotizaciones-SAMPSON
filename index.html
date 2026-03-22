@@ -2,96 +2,94 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotizaciones</title>
-    <link rel="icon" type="image/jpeg" href="logo.jpeg">
-    <link rel="stylesheet" href="style.css">
+    <title>Cuadro Comparativo - SAMPSON</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #4a90e2; color: white; }
+        input { width: 90%; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;}
+        .total-general { font-size: 1.2em; font-weight: bold; margin-top: 20px; text-align: right; }
+        button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;}
+        button:hover { background-color: #218838; }
+    </style>
 </head>
 <body>
-    <header>
-        <img src="logo.jpeg" alt="Logo Sampson" class="logo-img">
-        <div class="header-text">
-            <h2>CUADRO COMPARATIVO DE OFERTAS</h2>
-            <p>Departamento de Compras y Planificación</p>
-        </div>
-    </header>
 
-    <div class="container">
-        
-        <section id="form-section" class="no-print">
-            <div class="input-main">
-                <label>Descripción del Producto o Servicio (Ej: Tubería PVC 2"):</label>
-                <input type="text" id="prod-nombre" placeholder="Nombre del producto a agregar...">
-            </div>
+    <h2>Asistente de Cotizaciones SAMPSON 🚀</h2>
 
-            <div class="quotes-grid">
-                <div class="quote-card">
-                    <span class="badge">Opción 1</span>
-                    <input type="text" id="p1-nom" placeholder="Nombre Proveedor">
-                    <input type="number" id="p1-precio" placeholder="Precio (Q)">
-                    <select id="p1-envio">
-                        <option value="No">Envío incluido: No</option>
-                        <option value="Sí">Envío incluido: Sí</option>
-                    </select>
-                    <textarea id="p1-obs" placeholder="Garantía, tiempo de entrega..."></textarea>
-                    <label class="file-label">📸 Foto/Captura (Local):</label>
-                    <input type="file" id="p1-file" accept="image/*">
-                </div>
+    <table id="tabla-cotizacion">
+        <thead>
+            <tr>
+                <th>Descripción del Artículo</th>
+                <th>Precio Unitario (Q)</th>
+                <th>Cantidad</th>
+                <th>Total (Q)</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpo-tabla">
+            <tr>
+                <td><input type="text" placeholder="Ej. Lápices" class="descripcion"></td>
+                <td><input type="number" class="precio" value="20" min="0" step="0.01"></td>
+                <td><input type="number" class="cantidad" value="5" min="1"></td>
+                <td class="total-fila">Q 100.00</td>
+            </tr>
+        </tbody>
+    </table>
 
-                <div class="quote-card">
-                    <span class="badge">Opción 2</span>
-                    <input type="text" id="p2-nom" placeholder="Nombre Proveedor">
-                    <input type="number" id="p2-precio" placeholder="Precio (Q)">
-                    <select id="p2-envio">
-                        <option value="No">Envío incluido: No</option>
-                        <option value="Sí">Envío incluido: Sí</option>
-                    </select>
-                    <textarea id="p2-obs" placeholder="Garantía, tiempo de entrega..."></textarea>
-                    <label class="file-label">📸 Foto/Captura (Local):</label>
-                    <input type="file" id="p2-file" accept="image/*">
-                </div>
+    <button onclick="agregarFila()">+ Agregar otro artículo</button>
 
-                <div class="quote-card">
-                    <span class="badge">Opción 3</span>
-                    <input type="text" id="p3-nom" placeholder="Nombre Proveedor">
-                    <input type="number" id="p3-precio" placeholder="Precio (Q)">
-                    <select id="p3-envio">
-                        <option value="No">Envío incluido: No</option>
-                        <option value="Sí">Envío incluido: Sí</option>
-                    </select>
-                    <textarea id="p3-obs" placeholder="Garantía, tiempo de entrega..."></textarea>
-                    <label class="file-label">📸 Foto/Captura (Local):</label>
-                    <input type="file" id="p3-file" accept="image/*">
-                </div>
-            </div>
-
-            <button onclick="agregarProducto()" class="main-btn" id="btn-agregar">
-                ➕ Agregar Producto al Proyecto
-            </button>
-        </section>
-
-        <section id="project-section">
-            <div id="fecha-contenedor" class="hidden">
-                <p><b>Fecha de emisión:</b> <span id="fecha-hoy"></span></p>
-            </div>
-
-            <div id="tablas-container"></div>
-
-            <div class="signature-area hidden" id="firma-area">
-                <div class="sig-box">
-                    <div class="line"></div>
-                    <p>Firma de Autorización</p>
-                    <p class="small">Dirección Técnica / Gerencia</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="actions no-print hidden" id="print-actions">
-            <button onclick="window.print()" class="print-btn">🖨️ Imprimir Proyecto Completo</button>
-            <button onclick="location.reload()" class="reset-btn">🗑️ Empezar Nuevo Proyecto</button>
-        </div>
-
+    <div class="total-general">
+        Total Cotización: <span id="gran-total">Q 100.00</span>
     </div>
+
+    <script>
+        // Función principal que calcula los totales
+        function calcularTotales() {
+            let granTotal = 0;
+            // Seleccionamos todas las filas de la tabla
+            const filas = document.querySelectorAll('#cuerpo-tabla tr');
+
+            filas.forEach(fila => {
+                // Obtenemos los valores de precio y cantidad de la fila actual
+                const precio = parseFloat(fila.querySelector('.precio').value) || 0;
+                const cantidad = parseFloat(fila.querySelector('.cantidad').value) || 0;
+                
+                // Multiplicamos
+                const totalFila = precio * cantidad;
+                
+                // Actualizamos el texto de esa fila
+                fila.querySelector('.total-fila').textContent = 'Q ' + totalFila.toFixed(2);
+                
+                // Sumamos al total general
+                granTotal += totalFila;
+            });
+
+            // Actualizamos el gran total en pantalla
+            document.getElementById('gran-total').textContent = 'Q ' + granTotal.toFixed(2);
+        }
+
+        // Función para agregar una nueva fila vacía
+        function agregarFila() {
+            const tbody = document.getElementById('cuerpo-tabla');
+            const nuevaFila = document.createElement('tr');
+            nuevaFila.innerHTML = `
+                <td><input type="text" placeholder="Nuevo artículo" class="descripcion"></td>
+                <td><input type="number" class="precio" value="0" min="0" step="0.01"></td>
+                <td><input type="number" class="cantidad" value="1" min="1"></td>
+                <td class="total-fila">Q 0.00</td>
+            `;
+            tbody.appendChild(nuevaFila);
+        }
+
+        // Escuchamos cualquier cambio en la tabla (si el usuario teclea números nuevos)
+        document.getElementById('tabla-cotizacion').addEventListener('input', function(e) {
+            // Solo calculamos si lo que cambió fue el precio o la cantidad
+            if (e.target.classList.contains('precio') || e.target.classList.contains('cantidad')) {
+                calcularTotales();
+            }
+        });
+    </script>
+
 </body>
-<script src="script.js"></script>
 </html>
